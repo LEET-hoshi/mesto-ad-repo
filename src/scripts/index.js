@@ -9,6 +9,17 @@
 import { initialCards } from "./cards.js";
 import { createCardElement, deleteCard, likeCard } from "./components/card.js";
 import { openModalWindow, closeModalWindow, setCloseModalWindowEventListeners } from "./components/modal.js";
+import { enableValidation, clearValidation } from "./components/validation.js";
+
+// Настройки валидации
+const validationSettings = {
+  formSelector: ".popup__form",
+  inputSelector: ".popup__input",
+  submitButtonSelector: ".popup__button",
+  inactiveButtonClass: "popup__button_disabled",
+  inputErrorClass: "popup__input_type_error",
+  errorClass: "popup__error_visible",
+};
 
 // DOM узлы
 const placesWrap = document.querySelector(".places__list");
@@ -37,6 +48,9 @@ const avatarFormModalWindow = document.querySelector(".popup_type_edit-avatar");
 const avatarForm = avatarFormModalWindow.querySelector(".popup__form");
 const avatarInput = avatarForm.querySelector(".popup__input");
 
+// Включение валидации
+enableValidation(validationSettings);
+
 const handlePreviewPicture = ({ name, link }) => {
   imageElement.src = link;
   imageElement.alt = name;
@@ -49,12 +63,18 @@ const handleProfileFormSubmit = (evt) => {
   profileTitle.textContent = profileTitleInput.value;
   profileDescription.textContent = profileDescriptionInput.value;
   closeModalWindow(profileFormModalWindow);
+  
+  // Очищаем форму после успешного сохранения
+  clearValidation(profileForm, validationSettings);
 };
 
-const handleAvatarFromSubmit = (evt) => {
+const handleAvatarFormSubmit = (evt) => {
   evt.preventDefault();
   profileAvatar.style.backgroundImage = `url(${avatarInput.value})`;
   closeModalWindow(avatarFormModalWindow);
+  
+  // Очищаем форму после успешного сохранения
+  clearValidation(avatarForm, validationSettings);
 };
 
 const handleCardFormSubmit = (evt) => {
@@ -74,26 +94,44 @@ const handleCardFormSubmit = (evt) => {
   );
 
   closeModalWindow(cardFormModalWindow);
+  
+  // Очищаем форму после успешного создания карточки
+  clearValidation(cardForm, validationSettings);
 };
 
 // EventListeners
 profileForm.addEventListener("submit", handleProfileFormSubmit);
 cardForm.addEventListener("submit", handleCardFormSubmit);
-avatarForm.addEventListener("submit", handleAvatarFromSubmit);
+avatarForm.addEventListener("submit", handleAvatarFormSubmit);
 
 openProfileFormButton.addEventListener("click", () => {
+  // Заполняем поля текущими значениями
   profileTitleInput.value = profileTitle.textContent;
   profileDescriptionInput.value = profileDescription.textContent;
+  
+  // Очищаем валидацию при открытии формы
+  clearValidation(profileForm, validationSettings);
+  
   openModalWindow(profileFormModalWindow);
 });
 
 profileAvatar.addEventListener("click", () => {
+  // Сбрасываем форму
   avatarForm.reset();
+  
+  // Очищаем валидацию при открытии формы
+  clearValidation(avatarForm, validationSettings);
+  
   openModalWindow(avatarFormModalWindow);
 });
 
 openCardFormButton.addEventListener("click", () => {
+  // Сбрасываем форму
   cardForm.reset();
+  
+  // Очищаем валидацию при открытии формы
+  clearValidation(cardForm, validationSettings);
+  
   openModalWindow(cardFormModalWindow);
 });
 

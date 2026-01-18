@@ -1,0 +1,28 @@
+{
+  "name": "mesto-ad",
+  "version": "1.0.0",
+  "description": "Стартовый набор для выполнения проектной работы Место",
+  "main": "vite.config.js",
+  "type": "commonjs",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build", 
+    "preview": "vite preview",
+    "start": "vite",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Yandex-Practicum/mesto-ad.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Yandex-Practicum/mesto-ad/issues"
+  },
+  "homepage": "https://github.com/Yandex-Practicum/mesto-ad#readme",
+  "devDependencies": {
+    "vite": "^7.3.1"
+  }
+}
