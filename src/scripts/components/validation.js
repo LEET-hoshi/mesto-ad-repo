@@ -2,6 +2,11 @@
 const showInputError = (formElement, inputElement, errorMessage, config) => {
   const errorElement = formElement.querySelector(`#${inputElement.id}-error`);
   
+  if (!errorElement) {
+    console.warn(`Элемент ошибки не найден для: ${inputElement.id}`);
+    return;
+  }
+  
   inputElement.classList.add(config.inputErrorClass);
   errorElement.textContent = errorMessage;
   errorElement.classList.add(config.errorClass);
@@ -11,6 +16,8 @@ const showInputError = (formElement, inputElement, errorMessage, config) => {
 const hideInputError = (formElement, inputElement, config) => {
   const errorElement = formElement.querySelector(`#${inputElement.id}-error`);
   
+  if (!errorElement) return;
+  
   inputElement.classList.remove(config.inputErrorClass);
   errorElement.textContent = '';
   errorElement.classList.remove(config.errorClass);
@@ -19,11 +26,9 @@ const hideInputError = (formElement, inputElement, config) => {
 // Проверка валидности поля
 const checkInputValidity = (formElement, inputElement, config) => {
   if (!inputElement.validity.valid) {
-    // Для поля с data-error-message и ошибкой patternMismatch показываем кастомное сообщение
     if (inputElement.dataset.errorMessage && inputElement.validity.patternMismatch) {
       showInputError(formElement, inputElement, inputElement.dataset.errorMessage, config);
     } else {
-      // Иначе показываем стандартное сообщение браузера
       showInputError(formElement, inputElement, inputElement.validationMessage, config);
     }
   } else {
@@ -33,9 +38,7 @@ const checkInputValidity = (formElement, inputElement, config) => {
 
 // Проверка наличия невалидных полей в форме
 const hasInvalidInput = (inputList) => {
-  return inputList.some((inputElement) => {
-    return !inputElement.validity.valid;
-  });
+  return inputList.some((inputElement) => !inputElement.validity.valid);
 };
 
 // Делает кнопку неактивной
@@ -64,22 +67,28 @@ const setEventListeners = (formElement, config) => {
   const inputList = Array.from(formElement.querySelectorAll(config.inputSelector));
   const buttonElement = formElement.querySelector(config.submitButtonSelector);
   
-  // При загрузке формы делаем кнопку неактивной
-  disableSubmitButton(buttonElement, config);
+  if (!buttonElement) {
+    console.error(`Кнопка не найдена в форме: ${config.submitButtonSelector}`);
+    return;
+  }
+  
+  // Инициализируем состояние кнопки
+  toggleButtonState(inputList, buttonElement, config);
   
   // Добавляем обработчики для каждого поля
   inputList.forEach((inputElement) => {
-    // Обработчик ввода
     inputElement.addEventListener('input', () => {
       checkInputValidity(formElement, inputElement, config);
       toggleButtonState(inputList, buttonElement, config);
     });
     
-    // Обработчик blur для немедленной валидации при уходе с поля
     inputElement.addEventListener('blur', () => {
       checkInputValidity(formElement, inputElement, config);
     });
   });
+  
+  // Предотвращаем повторную инициализацию
+  formElement.dataset.validationInitialized = 'true';
 };
 
 // Очистка ошибок валидации
@@ -87,15 +96,19 @@ export const clearValidation = (formElement, config) => {
   const inputList = Array.from(formElement.querySelectorAll(config.inputSelector));
   const buttonElement = formElement.querySelector(config.submitButtonSelector);
   
+  if (!buttonElement) return;
+  
   // Скрываем все ошибки
   inputList.forEach((inputElement) => {
     hideInputError(formElement, inputElement, config);
-    // Сбрасываем состояние валидации браузера
     inputElement.setCustomValidity('');
   });
   
   // Делаем кнопку неактивной
   disableSubmitButton(buttonElement, config);
+  
+  // Сбрасываем форму
+  formElement.reset();
 };
 
 // Включение валидации для всех форм
@@ -103,7 +116,11 @@ export const enableValidation = (config) => {
   const formList = Array.from(document.querySelectorAll(config.formSelector));
   
   formList.forEach((formElement) => {
-    // Устанавливаем обработчики для полей формы
+    // Пропускаем уже инициализированные формы
+    if (formElement.dataset.validationInitialized) {
+      return;
+    }
+    
     setEventListeners(formElement, config);
   });
 };
