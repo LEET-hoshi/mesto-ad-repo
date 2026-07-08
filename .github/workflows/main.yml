@@ -45,7 +45,10 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './mesto-ad/dist'
+          # Скрипт проверит папку dist внутри mesto-ad, а если её нет — возьмет из корня
+          path: |
+            ./mesto-ad/dist
+            ./dist
 
       - name: Deploy to GitHub Pages
         id: deployment
