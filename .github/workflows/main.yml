@@ -39,13 +39,32 @@ jobs:
         run: npm run build
         working-directory: mesto-ad
 
+      - name: Find and Prepare Build Folder
+        run: |
+          if [ -d "mesto-ad/dist" ]; then
+            echo "Found dist in subfolder"
+            cp -r mesto-ad/dist ./public_dist
+          elif [ -d "mesto-ad/build" ]; then
+            echo "Found build in subfolder"
+            cp -r mesto-ad/build ./public_dist
+          elif [ -d "dist" ]; then
+            echo "Found dist in root"
+            cp -r dist ./public_dist
+          elif [ -d "build" ]; then
+            echo "Found build in root"
+            cp -r build ./public_dist
+          else
+            echo "No build folder found!"
+            exit 1
+          fi
+
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: 'mesto-ad/dist/'
+          path: './public_dist'
 
       - name: Deploy to GitHub Pages
         id: deployment
