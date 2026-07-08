@@ -54,21 +54,6 @@ const config = {
     }).then(getResponseData);
   };
   
-  // Старые функции можно удалить или оставить для обратной совместимости
-  export const addLike = (cardId) => {
-    return fetch(`${config.baseUrl}/cards/likes/${cardId}`, {
-      method: 'PUT',
-      headers: config.headers,
-    }).then(getResponseData);
-  };
-  
-  export const removeLike = (cardId) => {
-    return fetch(`${config.baseUrl}/cards/likes/${cardId}`, {
-      method: 'DELETE',
-      headers: config.headers,
-    }).then(getResponseData);
-  };
-  
   export const updateUserAvatar = (avatarUrl) => {
     return fetch(`${config.baseUrl}/users/me/avatar`, {
       method: 'PATCH',

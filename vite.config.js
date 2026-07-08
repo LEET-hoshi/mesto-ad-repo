@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite'
+import { defineConfig } from 'vite';
 
 export default defineConfig({
   server: {
@@ -8,6 +8,7 @@ export default defineConfig({
     strictPort: false    // Если порт занят, использовать другой
   },
   // Дополнительные настройки для проекта
+  base: './',
   root: '.',             // Корневая папка проекта
   publicDir: 'public',   // Папка со статическими файлами
   build: {
